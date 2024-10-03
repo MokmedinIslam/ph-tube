@@ -1,15 +1,3 @@
-function getTimeString(time){
-    // const year = parseInt(time / 31536000);
-    // let remainingSecond = time % 31536000;
-    // const month = parseInt(time / 86400);
-    // remainingSecond = remainingSecond % 86400;
-    const hour = parseInt(time / 3600);
-    remainingSecond = time % 3600;
-    const minute = parseInt(remainingSecond / 60);
-    remainingSecond = remainingSecond % 60;
-    return `${hour} hour ${minute} minute ${remainingSecond} second ago`
-};
-
 // function getTimeString(time){
 //     if(time < 86400){
 //         const hour = parseInt(time / 3600);
@@ -28,6 +16,25 @@ function getTimeString(time){
 //         return `${year} year ago`
 //     }
 // };
+function getTimeString(time){
+    // const year = parseInt(time / 31536000);
+    // let remainingSecond = time % 31536000;
+    // const month = parseInt(time / 86400);
+    // remainingSecond = remainingSecond % 86400;
+    const hour = parseInt(time / 3600);
+    remainingSecond = time % 3600;
+    const minute = parseInt(remainingSecond / 60);
+    remainingSecond = remainingSecond % 60;
+    return `${hour} hour ${minute} minute ${remainingSecond} second ago`
+};
+
+const removeActiveClass = () => {
+    const buttons = document.getElementsByClassName("category-btn");
+    console.log(buttons)
+    for(let btn of buttons){
+        btn.classList.remove("active");
+    }
+};
 
 // 1. fetch, load and show Categories on html
 
@@ -54,7 +61,14 @@ const loadCategoryVideos = (id) => {
     // alert(id);
     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
     .then((res) => res.json())
-    .then((data) => displayVideos(data.category))
+    .then((data) => {
+        // sobaike active class remove koro
+        removeActiveClass();
+        // id er class ke active koro
+        const activeBtn = document.getElementById(`btn-${id}`);
+        activeBtn.classList.add("active")
+        displayVideos(data.category);
+    })
     .catch((error) => console.error(error)
     )
 };
@@ -85,7 +99,7 @@ const displayVideos = (videos) =>{
         videoContainer.classList.remove("grid");
         videoContainer.innerHTML =`
         <div class="min-h-[300] w-full flex flex-col gap-5 justify-center items-center">
-        <img src="assets/Icon.png" />
+        <img src="./assets/Icon.png" />
         <h2 class="text-center text-xl font-bold">No Content Here in this Category</h2>
         </div>
         `;
@@ -136,7 +150,7 @@ const displayCategories = (categories) => {
 
         const buttonContainer = document.createElement('div');
         buttonContainer.innerHTML=`
-        <button onclick="loadCategoryVideos(${item.category_id})" class="btn">
+        <button id="btn-${item.category_id}" onclick="loadCategoryVideos(${item.category_id})" class="btn category-btn">
         ${item.category}
         </button>
         `
