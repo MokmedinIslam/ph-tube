@@ -1,3 +1,34 @@
+function getTimeString(time){
+    // const year = parseInt(time / 31536000);
+    // let remainingSecond = time % 31536000;
+    // const month = parseInt(time / 86400);
+    // remainingSecond = remainingSecond % 86400;
+    const hour = parseInt(time / 3600);
+    remainingSecond = time % 3600;
+    const minute = parseInt(remainingSecond / 60);
+    remainingSecond = remainingSecond % 60;
+    return `${hour} hour ${minute} minute ${remainingSecond} second ago`
+};
+
+// function getTimeString(time){
+//     if(time < 86400){
+//         const hour = parseInt(time / 3600);
+//         let remainingSecond = time % 3600;
+//         const minute = parseInt(remainingSecond / 60);
+//         remainingSecond = remainingSecond % 60;
+//         return `${hour} hour ${minute} minute ${remainingSecond} second ago`
+//     }
+//     else if(time < 31536000){
+//         const month = parseInt(time / 86400);
+//         remainingSecond = remainingSecond % 86400;
+//         return `${month} month ago`
+//     }
+//     else(time >= 31536000){
+//         const year = parseInt(time / 31536000);
+//         return `${year} year ago`
+//     }
+// };
+
 // 1. fetch, load and show Categories on html
 
 // create loadCategories
@@ -15,6 +46,15 @@ const loadVideos = () => {
     fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
     .then((res) => res.json())
     .then((data) => displayVideos(data.videos))
+    .catch((error) => console.error(error)
+    )
+};
+
+const loadCategoryVideos = (id) => {
+    // alert(id);
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    .then((res) => res.json())
+    .then((data) => displayVideos(data.category))
     .catch((error) => console.error(error)
     )
 };
@@ -40,6 +80,7 @@ const loadVideos = () => {
 
 const displayVideos = (videos) =>{
     const videoContainer = document.getElementById('videos');
+    videoContainer.innerHTML="";
     videos.forEach(video => {
         console.log(video)
         const card = document.createElement('div');
@@ -49,7 +90,7 @@ const displayVideos = (videos) =>{
     <img
       src=${video.thumbnail} class= "w-full h-full object-cover"
       alt="Shoes" />
-      <span class="absolute right-3 bottom-3 bg-black text-white rounded p-1">${video.others.posted_date}</span>
+      ${video.others.posted_date?.length == 0? "": `<span class="absolute right-3 bottom-3 bg-black text-white text-xs rounded p-1">${getTimeString(video.others.posted_date)}</span>`}  
     </figure>
     <div class="px-0 py-3 flex gap-3">    
         <div>
@@ -79,13 +120,16 @@ const displayCategories = (categories) => {
         console.log(item)
         // create a button
 
-        const button = document.createElement('button');
-        button.classList = 'btn';
-        button.innerText = item.category;
-
+        const buttonContainer = document.createElement('div');
+        buttonContainer.innerHTML=`
+        <button onclick="loadCategoryVideos(${item.category_id})" class="btn">
+        ${item.category}
+        </button>
+        `
+        
         // add button to category container
-        categoryContainer.append(button)
-    })
+        categoryContainer.append(buttonContainer)
+    });
 };
 
 loadCategories();
